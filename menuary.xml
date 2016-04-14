@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="system" method="upgrade">
+  <name>PLG_MENUARY</name>
+  <creationDate>2016-04-14</creationDate>
+  <author>Gruz</author>
+  <authorEmail>arygroup@gmail.com</authorEmail>
+  <authorUrl>http://gruz.org.ua/en/extensions/menuary-automatic-menu.html</authorUrl>
+  <copyright>Copyright (C) 2004-2016 Gruz All rights reserved.</copyright>
+  <version>1.1.4</version>
+  <license>GNU/GPL</license>
+  <description>PLG_MENUARY_DESC</description>
+  <files>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  <folder>css</folder><folder>extensions</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>models</folder><filename>README.md</filename><filename>index.html</filename><filename>install.sql</filename><filename plugin="menuary">menuary.php</filename><filename>scriptfile.php</filename><filename>uninstall.sql</filename></files>
+  <scriptfile>scriptfile.php</scriptfile>
+  <config>
+    <fields name="params" addfieldpath="/plugins/system/menuary/models/fields">
+      <fieldset name="advanced" group="advanced">
+        <field name="ajax" type="list" maxrepeatlength="1" default="1" label="PLG_MENUARY_USE_AJAX" description="PLG_MENUARY_USE_AJAX_DESC">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+        <field name="debug" type="list" maxrepeatlength="1" default="0" label="PLG_MENUARY_DEBUG">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+        <field name="{debug" type="variablefield" basetype="toggler" param="debug" value="1" maxrepeatlength="1"/>
+        <field name="step" type="text" maxrepeatlength="1" default="0" label="PLG_MENUARY_DEBUG_STEP" description="PLG_MENUARY_DEBUG_STEP_DESC"/>
+        <field name="debug}" type="variablefield" basetype="toggler" maxrepeatlength="1"/>
+      </fieldset>
+      <fieldset name="basic" addfieldpath="/libraries/gjfields">
+        <field name="@version" type="nn_version" extension="AUTOREADMORE" xml="/plugins/system/menuary/menuary.xml"/>
+        <field name="@popupwindow" type="popupwindow"/>
+        <field name="{menugroup" length="" maxrepeatlength="" type="variablefield" label="PLG_MENUARY_DEFAULT_GROUP_NAME" basetype="group"/>
+        <field name="ruleEnabled" type="variablefield" basetype="list" maxrepeatlength="1" default="1" label="JENABLED">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+        <field name="target" type="variablefield" basetype="list" maxrepeatlength="1" default="root" label="PLG_MENUARY_MENU_PARENT">
+          <option value="root">PLG_MENUARY_MENU_PARENT_ROOT</option>
+          <option value="menuitem">PLG_MENUARY_MENU_PARENT_MENU_ITEM</option>
+        </field>
+        <field name="{target_root" type="variablefield" basetype="toggler" param="target" value="root" maxrepeatlength="1"/>
+        <field name="menuname" type="variablefield" basetype="text" default="MenuAry" label="PLG_MENUARY_MENU_NAME" description="PLG_MENUARY_MENU_NAME_DESC" maxrepeatlength="1"/>
+        <field name="target_root}" type="variablefield" basetype="toggler" maxrepeatlength="1"/>
+        <field name="{target_menu_item" type="variablefield" basetype="toggler" param="target" value="menuitem" maxrepeatlength="1"/>
+        <field name="target_menu_item" type="variablefield" basetype="Menuitemhierarchy" label="PLG_MENUARY_MENU_PARENT_MENU_ITEM_SELECT" maxrepeatlength="1"/>
+        <field name="target_menu_item}" type="variablefield" basetype="toggler" maxrepeatlength="1"/>
+        <field name="categories" type="variablefield" basetype="category" extension="com_content" multiple="multiple" size="20" show_uncategorized="1" default="" label="PLG_MENUARY_CATS" description="PLG_MENUARY_CATS_DESC" maxrepeatlength="1"/>
+        <field maxrepeatlength="1" type="variablefield" basetype="list" name="hide_top_category" label="PLG_MENUARY_HIDE_TOP_CATEGORY" description="PLG_MENUARY_HIDE_TOP_CATEGORY_DESC" default="0">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="category_link_type" type="variablefield" basetype="list" maxrepeatlength="1" default="default" label="PLG_MENUARY_CATEGORY_LINK_TYPE" description="PLG_MENUARY_CATEGORY_LINK_TYPE_DESC">
+          <option value="_:default">JDEFAULT</option>
+          <option value="_:blog">JGLOBAL_BLOG</option>
+          <option value="_:list">JGLOBAL_LIST</option>
+          <option value="none">JNONE</option>
+        </field>
+        <field name="com_categories.category_order" type="variablefield" basetype="list" maxrepeatlength="1" default="default" label="PLG_MENUARY_CATEGORY_ORDER">
+          <option value="default">PLG_MENUARY_ORDER_OPTION_DONT_CARE</option>
+          <option value="order asc">PLG_MENUARY_ORDER_OPTION_ORDER_ASC</option>
+          <option value="order desc">PLG_MENUARY_ORDER_OPTION_ORDER_DESC</option>
+          <option value="title asc">PLG_MENUARY_ORDER_OPTION_TITLE_ASC</option>
+          <option value="title desc">PLG_MENUARY_ORDER_OPTION_TITLE_DESC</option>
+        </field>
+        <field maxrepeatlength="1" type="variablefield" basetype="list" name="show_articles" label="PLG_MENUARY_ARTICLES" description="PLG_MENUARY_ARTICLES_DESC" default="1">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="{article_order" type="variablefield" basetype="toggler" param="show_articles" value="1" maxrepeatlength="1"/>
+        <field name="com_content.article_order" type="variablefield" basetype="list" maxrepeatlength="1" default="default" label="PLG_MENUARY_ARTICLE_ORDER">
+          <option value="default">PLG_MENUARY_ORDER_OPTION_DONT_CARE</option>
+          <option value="order asc">PLG_MENUARY_ORDER_OPTION_ORDER_ASC</option>
+          <option value="order desc">PLG_MENUARY_ORDER_OPTION_ORDER_DESC</option>
+          <option value="title asc">PLG_MENUARY_ORDER_OPTION_TITLE_ASC</option>
+          <option value="title desc">PLG_MENUARY_ORDER_OPTION_TITLE_DESC</option>
+          <option value="created asc">PLG_MENUARY_ORDER_OPTION_CREATED_ASC</option>
+          <option value="created desc">PLG_MENUARY_ORDER_OPTION_CREATED_DESC</option>
+          <option value="modified asc">PLG_MENUARY_ORDER_OPTION_MODIFIED_ASC</option>
+          <option value="modified desc">PLG_MENUARY_ORDER_OPTION_MODIFIED_DESC</option>
+          <option value="publish_up asc">PLG_MENUARY_ORDER_OPTION_PUBLISH_UP_ASC</option>
+          <option value="publish_up desc">PLG_MENUARY_ORDER_OPTION_PUBLISH_UP_DESC</option>
+          <option value="publish_down asc">PLG_MENUARY_ORDER_OPTION_PUBLISH_DOWN_ASC</option>
+          <option value="publish_down desc">PLG_MENUARY_ORDER_OPTION_PUBLISH_DOWN_DESC</option>
+        </field>
+        <field maxrepeatlength="1" type="variablefield" basetype="text" name="articles_number" label="PLG_MENUARY_ARTICLES_NUMBER" description="PLG_MENUARY_ARTICLES_NUMBER_DESC" default="0"/>
+        <field name="article_order}" type="variablefield" basetype="toggler" maxrepeatlength="1"/>
+        <field name="regeneratemenu" type="variablefield" basetype="list" default="1" label="PLG_MENUARY_REGEN" description="PLG_MENUARY_REGEN_DESC" maxrepeatlength="1">
+          <option value="0">JNO</option>
+          <option value="1">PLG_MENUARY_REGENERATE_GRACEFUL</option>
+          <option value="2">PLG_MENUARY_REGENERATE_FORCE</option>
+        </field>
+        <field name="menugroup}" type="variablefield" basetype="group"/>
+      </fieldset>
+    </fields>
+  </config>
+  <install>
+    <sql>
+      <file driver="mysql" charset="utf8">install.sql</file>
+    </sql>
+  </install>
+  <uninstall>
+    <sql>
+      <file driver="mysql" charset="utf8">uninstall.sql</file>
+    </sql>
+  </uninstall>
+  
+<updateservers><servers type="extension" priority="1" name="menuary">http://gruz.org.ua/index.php?option=com_ars&amp;view=update&amp;task=stream&amp;format=xml&amp;id=12&amp;dummy=extension.xml</servers></updateservers></extension>
