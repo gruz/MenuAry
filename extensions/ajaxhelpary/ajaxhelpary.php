@@ -13,7 +13,19 @@ class plgAjaxAjaxhelpary extends JPlugin
 			return;
 		}
 
-		JSession::checkToken( 'get' ) or die( 'Invalid Token' );
+//~ $tmp = array('unsubscribe'=>'a@a.com');
+//~ $tmp = base64_encode(serialize($tmp));
+//~ echo '<pre> Line: '.__LINE__.' '.PHP_EOL;
+//~ print_r($tmp);
+//~ echo PHP_EOL.'</pre>'.PHP_EOL;
+//~ $tmp = unserialize(base64_decode($serialize));
+//~ echo '<pre> Line: '.__LINE__.' '.PHP_EOL;
+//~ print_r($tmp);
+//~ echo PHP_EOL.'</pre>'.PHP_EOL;
+//~
+		if ($scope != 'direct') {
+			JSession::checkToken( 'get' ) or die( 'Invalid Token' );
+		}
 
 
 		$app = JFactory::getApplication();

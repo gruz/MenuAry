@@ -1,122 +1,47 @@
-if (typeof( window['gjToggler'] ) == "undefined") {
+jQuery( document ).ready(function($) {
 
-	window.addEvent('domready', function() {
-		if (document.getElements('.gjtoggler').length) {
-			gjToggler = new gjToggler();
-		} else {
-			// Try again 2 seconds later, because IE sometimes can't see object immediatly
-			(function() {
-				if (document.getElements('.gjtoggler').length) {
-					gjToggler = new gjToggler();
+	$.connectToggler = function (element) {
+
+		var toBeToggled = $(element);
+		var togglerData = toBeToggled.data('toggler');
+		var togglerRulesGroup = toBeToggled.data('rules-group');
+
+
+		$.each(togglerData, function( index, value ) {
+
+			toBeToggled.isGroup = false;
+			var toggler;
+			if(toBeToggled.closest('.repeating_group').length ) {
+				var togglerElementName ='jform[params]['+togglerRulesGroup+']['+index+'][]';
+				var toggler = toBeToggled.closest('.repeating_group').find('[name="'+togglerElementName+'"]')[0];
+
+			} else {
+				var togglerElementName ='jform[params]['+index+']';
+				var toggler = $('[name="'+togglerElementName+'"]')[0];
+			}
+			toggler = $(toggler);
+			toggler.addClass('isToggler');
+//console.log (toggler,toggler.data('tobetoggledId'));
+//			toggler.data('tobetoggledId',toBeToggled.attr('id'));
+
+			toggler.change(function() {
+				if ($.inArray( this.value, value ) >-1) {
+					toBeToggled.show('slow');
+				} else {
+					toBeToggled.hide('slow');
 				}
-			}).delay(2000);
-		}
-	});
-
-	var gjToggler = new Class({
-		initialize: function() {
-			var self = this;
-			var ElementsBeToggled = document.getElements('.gjtoggler');
-			Array.each(ElementsBeToggled, function(toBeToggled) {//iterate all toBeToggled blocks and find switches
-				self.connectWithSwitch(toBeToggled);
 			});
-		},
-		connectWithSwitch: function (toBeToggled) {
-			var openValues = new Array;
-			// Get switch name(s) and values for the switch(es) to the toggle object
-			var valuestmp = toBeToggled.className.split(' ')[1].split('___');
-			for (i = 1; i < valuestmp.length; i++) {//skip 0 element, it's just an uniqid'
-				openValues.push(valuestmp[i].split('.')[1]);
-			}
-			//Now I need  to find the switch element
-			toBeToggled.SwitchName = toBeToggled.className.split('___')[1].split('.')[0];//i.e. id="6345282___showit.1___showit.2" where the strange number is an uniqid, and showit.1 meand the name of the switcher and the value of the switcher
-			var switcher;
-			toBeToggled.groupname = '';//Prepare flag to store name of the group, if the toBeToggled is inside a group
-			// Now we need to find the switch in the DOM.
-			// If we are in a group, then we must look for the Switch only in the group
-			toBeToggled.isGroup = toBeToggled.getParent('.repeating_group');
-			if (toBeToggled.isGroup) {
+			toggler.trigger("change");
+			toggler.trigger("chosen:updated");
+			toggler.trigger("liszt:updated"); // At least with Joomla 3.4.8 it needs this trigger
 
-				classes = toBeToggled.isGroup.className.split(' ');
-				for (k = 0; k < classes.length; k++) {
-					curclass = classes[k].split('__');
-					if (curclass[0] == 'variablegroup') {
-						toBeToggled.groupname = curclass[1];
-						break;
-					}
-				}
-				// We cannot rely on element id's as while duplicating groups the id's are nulled,
-				// so we form the element name to find elements by name inside the group
-				var switchElementName ='jform[params][{'+toBeToggled.groupname+']['+toBeToggled.SwitchName+'][]';
-				var switchers = toBeToggled.isGroup.getElements('.sliderContainer select');//Radio and Checkboxes cannot be duplicated, only Select
+		});
+	}
 
-				for (l = 0; l < switchers.length; l++) {
-					if (switchers[l].name == switchElementName || switchers[l].name == switchElementName+'[]') {
-						switcher = switchers[l];
-						break;
-					}
-				}
+	//$('.gjtoggler').each(connectToggler());
+	$(".gjtoggler").each(function(){
+       $.connectToggler(this);
+   });
 
-			}
-			else {
-				var switchElementName ='jform[params]['+toBeToggled.SwitchName+']';
-				//var startFromElement = gjScripts.getParentByTagName(toBeToggled,'div.tab-pane');
-				//~ var startFromElement = toBeToggled.getParent('div.tab-pane');
-				var startFromElement = toBeToggled.closest('div.tab-pane, fieldset.panelform');
-				var switchers = startFromElement.getElements('select');//Radio and Checkboxes cannot be duplicated, only Select
-				for (l = 0; l < switchers.length; l++) {
-					if (switchers[l].name == switchElementName || switchers[l].name == switchElementName+'[]') {//Normal field or a variable one
-						switcher = switchers[l];
-						break;
-					}
-				}
-			}
-			var myVerticalSlide = new Fx.Slide(toBeToggled,{
-								resetHeight: true,
-								onStart: function() {
-									this.wrapper.setStyle('clear','both');
-									this.wrapper.setStyle('width','100%');
-								},
-								onComplete: function() {
-									this.wrapper.setStyle('width','100%');
-								}
-							});
-			if (!openValues.contains(switcher.value)) {
-				myVerticalSlide.hide();
-			}
-			else {
-				myVerticalSlide.wrapper.style.overflow = 'visible';
-				myVerticalSlide.element.style.overflow = 'visible';
-			}
-			var switchFunction = function(event){
-				if (event && event.stop) event.stop();
-				var open = openValues.contains(switcher.value);
-				if (open) {
-					myVerticalSlide.slideIn().chain(function(){
-							this.wrapper.style.overflow = 'visible';
-							this.element.style.overflow = 'visible';
-						});
-				}
-				else {
-					myVerticalSlide.wrapper.style.overflow = 'hidden';
-					myVerticalSlide.element.style.overflow = 'hidden';
-					myVerticalSlide.slideOut();
-				}
-				return;
-			}
 
-			if (JVERSION>='3.0' && gjfields_HTMLtype == 'div') {//J3+ and isis
-				jQuery(switcher).chosen().change(switchFunction);
-			}
-			else {//2.5
-				switcher.addEvent('change', switchFunction);
-			}
-
-			if (!openValues.contains(switcher.value)) {
-				myVerticalSlide.hide();
-			}
-			return true;
-		}
-
-	});
-}
+});

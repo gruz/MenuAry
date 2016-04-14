@@ -84,8 +84,12 @@ jQuery( document ).ready(function($) {
 		var newPanel = currPanel.clone(true);
 		currPanel.find( 'select' ).each(function() {	$(this).chosen({disable_search_threshold: 10});	});
 		newPanel.find( 'select' ).each(function() {	$(this).chosen({disable_search_threshold: 10});	});
+		newPanel.find( '.isToggler' ).each(function() {
+			$(this).unbind( "change" );
+			$(this).removeClass( "isToggler" );
+		});
 		newPanel.find( '.gjtoggler' ).each(function() {
-			gjToggler.connectWithSwitch(this);
+			$.connectToggler(this);
 		});
 
 
@@ -131,10 +135,10 @@ jQuery( document ).ready(function($) {
 		var me = $(this);
 		var currPanel = $(me.closest('div.variablefield_div'));
 
-		currPanel.find( 'input, select , textarea' ).each(function() {
+		currPanel.find( 'input, select , textarea, text' ).each(function() {
 			var field = $(this);
 			var default_value = $( this ).attr( "data-default" );
-			if (default_value) {
+			if (default_value || (!default_value && typeof default_value !== 'undefined' )) {
 				field.val(default_value);
 				field.trigger("change");
 				field.trigger("chosen:updated");

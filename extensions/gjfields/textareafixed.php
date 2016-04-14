@@ -50,10 +50,11 @@ class JFormFieldTextareafixed extends JFormFieldGJFields	{
 			$this->value = JText::_($this->value);
 			$this->value = str_replace('\n',PHP_EOL,$this->value);
 		}
+		$this->value = PHP_EOL.$this->value;  // Make output first line, if it's empty.
 		return '<textarea name="'.$this->name.'" id="'.$this->id.'"' .
 				$columns.$rows.$class.$disabled.$onchange.'>' .
 				htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') .
-				'</textarea>';
+				'</textarea>' . $this->Addition('input');
 	}
 
 	public function getLabel()

@@ -100,9 +100,9 @@ $debug = false;
 
 		if (!isset($defaults[$this->origname])) {
 			$default = $this->getAttribute('default');
-			if (trim($default) != '') {
-				$defaults[$this->origname] = $default;
-			}
+			//~ if (trim($default) != '') {
+			//~ }
+			$defaults[$this->origname] = $default;
 		}
 		$this->defaults = $defaults;
 //~ echo '<pre style="background:#efefef">'.PHP_EOL;

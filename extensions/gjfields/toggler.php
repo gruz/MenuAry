@@ -34,18 +34,6 @@ class JFormFieldToggler extends JFormFieldGJFields {
 			$GLOBALS[$this->type.'_initialized'] = true;
 
 			$path_to_assets = JURI::root().'libraries/gjfields/';
-			/*
-			// It's my development need. If I use the same file for developing J2.5 and J3.0 I cannot properly determine the path, so I assume it's a default one (else)
-			if (strpos(__DIR__,JPATH_SITE)) {
-				$baseurl = str_replace('administrator/','',JURI::base());
-				$path_to_assets = JPath::clean(str_replace($baseurl,'',$baseurl . str_replace(JPATH_SITE,'',__DIR__).'/'));
-			}
-			else {
-				$path_to_assets = '/libraries/gjfields/';
-			}
-			*/
-
-
 
 			$doc = JFactory::getDocument();
 
@@ -55,8 +43,8 @@ class JFormFieldToggler extends JFormFieldGJFields {
 			$jversion = new JVersion;
 			$common_script = $path_to_assets.'js/script.js?v='.$jversion->RELEASE;
 			$doc->addScript($common_script);
-			$scriptname = $path_to_assets.'js/'.$this->type.'.js';
-			$doc->addScript($scriptname);
+			//$scriptname = $path_to_assets.'js/'.$this->type.'.js';
+			//$doc->addScript($scriptname);
 		}
 
 	}
@@ -65,22 +53,18 @@ class JFormFieldToggler extends JFormFieldGJFields {
 
 		$param = $this->def( 'param' );
 		$value = $this->def( 'value' );
-		$nofx = $this->def( 'nofx' );
-		$horz = $this->def( 'horizontal' );
-		$method = $this->def( 'method' );
-		$overlay = $this->def( 'overlay' );
-		$casesensitive = $this->def( 'casesensitive' );
 		$class = $this->def( 'class' );
+		$group_name = $this->def( 'name' );
 
 		if (!empty($this->element['clean_name'])) { $comment = $this->element['clean_name']; }
 		else { $comment = $this->element['name']; }
 
-		$param = preg_replace( '#^\s*(.*?)\s*$#', '\1', $param );
-		$param = preg_replace( '#\s*\|\s*#', '|', $param );
+		//~ $param = preg_replace( '#^\s*(.*?)\s*$#', '\1', $param );
+		//~ $param = preg_replace( '#\s*\|\s*#', '|', $param );
 
 		$html = '';
 		if ( $param != '' ) {
-			$param = preg_replace( '#[^a-z0-9-\.\|\@]#', '_', $param );
+			//~ $param = preg_replace( '#[^a-z0-9-\.\|\@]#', '_', $param );
 			$set_groups = explode( '|', $param );
 			$set_values = explode( '|', $value );
 			$ids = array();
@@ -91,30 +75,31 @@ class JFormFieldToggler extends JFormFieldGJFields {
 				}
 				$value = explode( ',', $set_values[$count] );
 				foreach ( $value as $val ) {
-					$ids[] = $group.'.'.$val;
+					//~ $ids[] = $group.'.'.$val;
+					$ids[$group][] = $val;
 				}
 			}
 			if (!empty($this->element['label'])) {
 				$class .= ' blockquote';
 			}
 
-			$id = '___'.implode( '___', $ids );
-			$html .= '<div id="'.rand( 1000000, 9999999 ).$id.'" class="gjtoggler options'.$id;
-			if ( $nofx ) {
-				$html .= ' gjtoggler_nofx';
+			$toggler_data = 'data-toggler=\''.json_encode($ids).'\'';
+
+			$group_name = $this->def( 'name' );
+			$group_name = explode ('][',$group_name,3);
+			if (isset($group_name[1])) {
+				$group_name = $group_name[1];
 			}
-			if ( $horz ) {
-				$html .= ' gjtoggler_horizontal';
+			else {
+				$group_name = '';
 			}
-			if ( $method == 'and' ) {
-				$html .= ' gjtoggler_and';
+			if (trim($group_name) != '') {
+				$toggler_data .= ' data-rules-group=\''.$group_name.'\'';
 			}
-			if ( $overlay ) {
-				$html .= ' gjtoggler_overlay';
-			}
-			if ( $casesensitive ) {
-				$html .= ' gjtoggler_casesensitive';
-			}
+
+			//~ $id = '___'.implode( '___', $ids );
+			//~ $html .= '<div id="'.rand( 1000000, 9999999 ).$id.'" class="gjtoggler options'.$id;
+			$html .= '<div id="gjtoggler_'.rand( 1000000, 9999999 ).'" '.$toggler_data.' class="gjtoggler options';
 			//$html .= '" style="visibility: hidden;">';
 			$html .= ' '.$class.'" >';
 			if (!empty($this->element['label'])) {

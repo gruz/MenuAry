@@ -47,6 +47,9 @@ class JFormFieldCategoryext extends JFormFieldCategory
 
 		$extension = $this->element[$context_or_contenttype] ? (string) $this->element[$context_or_contenttype] : (string) $this->element['scope'];
 //~ dump ($extension,'$extension');
+		$extension = explode(PHP_EOL,$extension);
+		$extension = trim($extension[0]);
+//~ dump ($extension,'$extension 2');
 		switch ($context_or_contenttype) {
 			case 'context':
 				break;
@@ -60,7 +63,7 @@ class JFormFieldCategoryext extends JFormFieldCategory
 		}
 		$extension = explode ('.',$extension);
 		$extension = $extension[0];
-//~ dump ($extension,'$extension 2');
+//~ dump ($extension,$this->getAttribute('name').' $extension 2');
 
 
 		$published = (string) $this->element['published'];
@@ -70,7 +73,6 @@ class JFormFieldCategoryext extends JFormFieldCategory
 		{
 			switch ($extension) {
 				case 'com_k2':
-
 					$db = JFactory::getDBO();
 
 					$query = 'SELECT m.* FROM #__k2_categories m WHERE trash = 0 ORDER BY parent, ordering';
@@ -146,7 +148,7 @@ class JFormFieldCategoryext extends JFormFieldCategory
 		}
 		else
 		{
-			JLog::add('NAS: '.$this->getAttribute('name').' '. JText::_('JLIB_FORM_ERROR_FIELDS_CATEGORY_ERROR_EXTENSION_EMPTY'), JLog::WARNING, 'jerror');
+			JLog::add('GJFields: '.$this->getAttribute('name').' '. JText::_('JLIB_FORM_ERROR_FIELDS_CATEGORY_ERROR_EXTENSION_EMPTY'), JLog::WARNING, 'jerror');
 		}
 
 		// Merge any additional options in the XML definition.
