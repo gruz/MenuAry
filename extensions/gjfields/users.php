@@ -3,125 +3,147 @@
  * @package     Joomla.Libraries
  * @subpackage  Form
  *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
 defined('JPATH_PLATFORM') or die;
-
+JFormHelper::loadFieldClass('user');
 /**
- * Field to select a user id from a modal list.
+ * Field to select a user ID from a modal list.
  *
- * @package     Joomla.Libraries
- * @subpackage  Form
- * @since       1.6.0
+ * @since  1.6
  */
-if (!class_exists('JFormFieldGJFields')) {include ('gjfields.php');}
-class JFormFieldUsers extends JFormFieldGJFields
+class JFormFieldUsers extends JFormField
 {
 	/**
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.6.0
+	 * @since  1.6
 	 */
 	public $type = 'Users';
+
+	/**
+	 * Filtering groups
+	 *
+	 * @var  array
+	 */
+	protected $groups = null;
+
+	/**
+	 * Users to exclude from the list of users
+	 *
+	 * @var  array
+	 */
+	protected $excluded = null;
+
+	/**
+	 * Layout to render
+	 *
+	 * @var  string
+	 */
+	/*##mygruz20160509132658 {
+	It was:
+	protected $layout = 'joomla.form.field.user';
+	It became:*/
+	protected $layout = 'gjfields.layouts.users';
+	/*##mygruz20160509132658 } */
 
 	/**
 	 * Method to get the user field input markup.
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   1.6.0
+	 * @since   1.6
 	 */
-	function getInput()
+	protected function getInput()
 	{
-		$html = array();
-		$groups = $this->getGroups();
-		$excluded = $this->getExcluded();
-		$link = 'index.php?option=com_users&amp;view=users&amp;layout=modal&amp;tmpl=component&amp;field=' . $this->id
-			. (isset($groups) ? ('&amp;groups=' . base64_encode(json_encode($groups))) : '')
-			. (isset($excluded) ? ('&amp;excluded=' . base64_encode(json_encode($excluded))) : '');
-
-		// Initialize some field attributes.
-		$attr = $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
-		$attr .= $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
-
-		// Initialize JavaScript field attributes.
-		$onchange = (string) $this->element['onchange'];
-
-		// Load the modal behavior script.
-		JHtml::_('behavior.modal', 'a.modal_' . $this->id);
-
-		// Build the script.
-		$script = array();
-		$script[] = '	function jSelectUser_' . $this->id . '(id, title) {';
-		/*##mygruz20130716042336 {
+		if (empty($this->layout))
+		{
+			throw new UnexpectedValueException(sprintf('%s has no layout assigned.', $this->name));
+		}
+		/*##mygruz20160509151935 {
 		It was:
-		$script[] = '		var old_id = document.getElementById("' . $this->id . '_id").value;';
-		$script[] = '		if (old_id != id) {';
-		$script[] = '			document.getElementById("' . $this->id . '_id").value = id;';
-		$script[] = '			document.getElementById("' . $this->id . '_name").value = title;';
-		$script[] = '			' . $onchange;
-		$script[] = '		}';
+      return $this->getRenderer($this->layout)->render($this->getLayoutData());
 		It became:*/
-		$script[] = '
-								if (document.id("'.$this->id.'_id").value.trim() == \'\') {
-										document.id("'.$this->id.'_id").value = id;
-								} else {
-									var currentValues = document.id("'.$this->id.'_id").value.split(\',\');
-									if (currentValues.contains(id)) {
-										return true;
-									}
-									document.id("'.$this->id.'_id").value = document.id("'.$this->id.'_id").value+\',\'+id
-								}
-		';
-		/*##mygruz20130716042336 } */
 
-		$script[] = '		SqueezeBox.close();';
-		$script[] = '	}';
+		//~ $document = JFactory::getDocument();
+			//~ $js = '
+				//~ jQuery(document).ready(function($){
+					//~ $(".subhead-collapse").hide();
+				//~ });';
+//~
+//~
+		//~ $document->addScriptDeclaration($js);
+		$includePaths = array();
+		$basePath = JPATH_LIBRARIES.'/gjfields/layouts/';
+		$includePaths[] = $basePath.JFactory::getApplication()->getTemplate().'/';
+		$includePaths[] = $basePath;
+		$layout = 'users';
 
-		// Add the script to the document head.
-		JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
+		if (!empty($this->element['simple']) && $this->element['simple']== 'true') {
+			// do nothing
+		} else {
+			$this->element['name'] = $this->element['name'].'[]';
+		}
+      $renderer = $this->getRenderer($layout);
+      $renderer->getDefaultIncludePaths();
+      $renderer->setIncludePaths(array_merge($renderer->getIncludePaths(),$includePaths)) ;
+      $data = array_merge($this->getLayoutData(),array('simple'=>( isset($this->element['simple']) && (string)$this->element['simple'] == 'true'  )? true: false));
+      //$renderer->setIncludePaths((array)JPATH_LIBRARIES) ;
+//~ var_dump($renderer);
+//~ var_dump($this->getLayoutData());
+      return $renderer->render($data,true	);
+		/*##mygruz20160509151935 } */
+	}
+
+	/**
+	 * Get the data that is going to be passed to the layout
+	 *
+	 * @return  array
+	 */
+	public function getLayoutData()
+	{
+		/* ##mygruz20160510204638 {
+		It was:
+		// Get the basic field data
+		$data = parent::getLayoutData();
 
 		// Load the current username if available.
 		$table = JTable::getInstance('user');
-		if ($this->value)
+
+		if (is_numeric($this->value))
 		{
+			$table->load($this->value);
+		}
+		// Handle the special case for "current".
+		elseif (strtoupper($this->value) == 'CURRENT')
+		{
+			// 'CURRENT' is not a reasonable value to be placed in the html
+			$this->value = JFactory::getUser()->id;
 			$table->load($this->value);
 		}
 		else
 		{
-			$table->username = JText::_('JLIB_FORM_SELECT_USER');
+			$table->name = JText::_('JLIB_FORM_SELECT_USER');
 		}
+		*
+		$extraData = array(
+				'userName'  => $table->name,
+				'groups'    => $this->getGroups(),
+				'excluded'  => $this->getExcluded()
+		);
+		It became: */
+		$data = parent::getLayoutData();
+		$extraData = array(
+				//'userName'  => $table->name,
+				'groups'    => $this->getGroups(),
+				'excluded'  => $this->getExcluded()
+		);
+		/* ##mygruz20160510204638 } */
 
-		// Create a dummy text field with the user name.
-		$html[] = '<div class="input-append">';
-		/*##mygruz20130716042304 {
-		It was:
-		//$html[] = '	<input class="input-medium" type="text" id="' . $this->id . '_name" value="' . htmlspecialchars($table->name, ENT_COMPAT, 'UTF-8') . '"'
-		//	. ' ' . $attr . ' />';
-		It became:*/
-		$html[] = '<input class="input-medium" type="text" id="' . $this->id . '_id" name="' . $this->name . '" value="' . $this->value . '"  '. $attr .' />';
-		/*##mygruz20130716042304 } */
-
-		// Create the user select button.
-		if ($this->element['readonly'] != 'true')
-		{
-			$html[] = '		<a class="btn btn-primary modal_' . $this->id . '" title="' . JText::_('JLIB_FORM_CHANGE_USER') . '" href="' . $link . '"'
-				. ' rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
-			$html[] = '<i class="icon-user"></i></a>';
-		}
-		$html[] = '</div>';
-
-		// Create the real field, hidden, that stored the user id.
-		/*##mygruz20130716042312 {
-		It was:
-		//$html[] = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="' . $this->value . '" />';
-		It became:*/
-		/*##mygruz20130716042312 } */
-
-		return implode("\n", $html);
+		return array_merge($data, $extraData);
 	}
 
 	/**
@@ -129,10 +151,15 @@ class JFormFieldUsers extends JFormFieldGJFields
 	 *
 	 * @return  mixed  array of filtering groups or null.
 	 *
-	 * @since   1.6.0
+	 * @since   1.6
 	 */
 	protected function getGroups()
 	{
+		if (isset($this->element['groups']))
+		{
+			return explode(',', $this->element['groups']);
+		}
+
 		return null;
 	}
 
@@ -141,10 +168,10 @@ class JFormFieldUsers extends JFormFieldGJFields
 	 *
 	 * @return  mixed  Array of users to exclude or null to to not exclude them
 	 *
-	 * @since   1.6.0
+	 * @since   1.6
 	 */
 	protected function getExcluded()
 	{
-		return null;
+		return explode(',', $this->element['exclude']);
 	}
 }

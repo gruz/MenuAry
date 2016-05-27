@@ -60,7 +60,8 @@ class JFormFieldBlockquote extends JFormFieldGJFields {
 		if (strpos($name,'{') === 0 || strpos($name,'jform[params][{') === 0 ) {
 			$html .= PHP_EOL.'	<div class="blockquote '.$class.'">'.'<!-- { div blockquote !-->'.PHP_EOL;
 			if (!empty($this->element['label'])) {
-				$html .= '		<div class="title">'.JText::_($this->element['label']).'</div>';
+				//~ $html .= '		<div class="title">'.JText::_($this->element['label']).'</div>';
+				$html .= '		<div class="title">'.parent::getLabel().'</div>';
 			}
 		}
 		else {

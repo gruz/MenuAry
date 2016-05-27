@@ -73,38 +73,48 @@ class JFormFieldCategoryext extends JFormFieldCategory
 		{
 			switch ($extension) {
 				case 'com_k2':
-					$db = JFactory::getDBO();
-
-					$query = 'SELECT m.* FROM #__k2_categories m WHERE trash = 0 ORDER BY parent, ordering';
-					$db->setQuery($query);
-					$mitems = $db->loadObjectList();
-					$children = array();
-					if ($mitems) 					{
-						foreach ($mitems as $v)						{
-							 if (K2_JVERSION != '15')
-							 {
-								  $v->title = $v->name;
-								  $v->parent_id = $v->parent;
-							 }
-							 $pt = $v->parent;
-							 $list = @$children[$pt] ? $children[$pt] : array();
-							 array_push($list, $v);
-							 $children[$pt] = $list;
+					try {
+						$db = JFactory::getDBO();
+						$query = 'SELECT m.* FROM #__k2_categories m WHERE trash = 0 ORDER BY parent, ordering';
+						$db->setQuery($query);
+						$mitems = $db->loadObjectList();
+						$children = array();
+						if ($mitems) 					{
+							foreach ($mitems as $v)						{
+								 if (K2_JVERSION != '15')
+								 {
+									  $v->title = $v->name;
+									  $v->parent_id = $v->parent;
+								 }
+								 $pt = $v->parent;
+								 $list = @$children[$pt] ? $children[$pt] : array();
+								 array_push($list, $v);
+								 $children[$pt] = $list;
+							}
 						}
+						$list = JHTML::_('menu.treerecurse', 0, '', array(), $children, 9999, 0, 0);
+						$mitems = array();
+						foreach ($list as $item)	{
+							$item->treename = JString::str_ireplace('&#160;', ' -', $item->treename);
+							$mitems[] = JHTML::_('select.option', $item->id, $item->treename);
+						}
+						$options = $mitems;
 					}
-					$list = JHTML::_('menu.treerecurse', 0, '', array(), $children, 9999, 0, 0);
-					$mitems = array();
-					foreach ($list as $item)	{
-						$item->treename = JString::str_ireplace('&#160;', ' -', $item->treename);
-						$mitems[] = JHTML::_('select.option', $item->id, $item->treename);
+						catch (Exception $e){
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED',$extension).'<br><pre>'.$e->getMessage().'</pre>', 'error');
 					}
-					$options = $mitems;
 					break;
 				case 'com_jdownloads':
-					JLoader::register('JFormFieldjdCategorySelect', JPATH_ADMINISTRATOR.'/components/'.$extension.'/models/fields/jdcategoryselect.php');
+					$file = JPATH_ADMINISTRATOR.'/components/'.$extension.'/models/fields/jdcategoryselect.php';
+					if (!file_exists($file)) {
+						JFactory::getApplication()->enqueueMessage(JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED',$extension).'<br>'.JText::_('LIB_GJFIELDS_FILE_NOT_EXISTS').'<pre>'.$file.'</pre>', 'error');
+						break;
+					}
+					JLoader::register('JFormFieldjdCategorySelect', $file);
 					$formfield = JFormHelper::loadFieldType('jdcategoryselect');
 					$formfield->setup($this->element,'');
 					$options = $formfield->getOptions();
+
 					break;
 				default :
 

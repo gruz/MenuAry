@@ -92,17 +92,27 @@ class plgSystemMenuary extends JPluginGJFields  {
 					$query
 						->where('`id` IN('.implode(',',$this->pparams[$k]['categories']).')');
 				}
+				if (!empty($this->pparams[$k]['categories_exclude'])) {
+					$query
+						->where('`id` NOT IN('.implode(',',$this->pparams[$k]['categories_exclude']).')');
+				}
 
 				$db->setQuery($query);
 
 				$categories = $db->loadAssocList('id');
-
 				$category_table = JTable::getInstance( 'category' );
 				$this->pparams[$k]['categories_to_menu'] = array();
 				foreach ($categories as $i=>$cat) {
 					if (!isset($this->pparams[$k]['categories_to_menu'][$i])) {
 						//$this->pparams[$k]['categories_to_menu'][$i] = $cat;
 						$children_cats = $category_table->getTree($i);
+						if (!empty($this->pparams[$k]['categories_exclude'])) {
+							foreach ($children_cats as $cc=>$categoryObject) {
+								if (in_array($categoryObject->id,$this->pparams[$k]['categories_exclude'])) {
+									unset($children_cats[$cc]);
+								}
+							}
+						}
 						$children_cats[0]->hide_category = false;
 						if ($this->pparams[$k]['hide_top_category'] == '1') {
 							$children_cats[0]->hide_category = true;
@@ -643,7 +653,7 @@ CategoriesCycle:
 					$txt = JText::_('PLG_MENUARY_AJAX_MENUITEM_UPDATED');
 				}
 				$this->catCounter++;
-				$this->_logMsg($txt.': ['.$this->catCounter.'] '.$category->title.' ( catid = '.$category->id.' ; Itemid = '.$Itemid.' )',false,4);
+				$this->_logMsg($txt.': ['.$this->catCounter.'] '.$category->title.' ( catid = '.$category->id.' ; Itemid = '.$Itemid.' ; alias: '.$category->alias .' )',false,4);
 				if ($this->isAjax ) {
 					$next_key = $this->_getNextKey($array = $this->categories_to_menu_current , $current_key = $catid);
 
@@ -802,7 +812,7 @@ ArticlesCycle:
 				$txt = JText::_('PLG_MENUARY_AJAX_MENUITEM_UPDATED');
 			}
 			$this->articleCounter++;
-			$this->_logMsg($txt.': ['.$this->articleCounter.'] '.$article['title'].' ( article id  = '.$article['id'].' ; Itemid = '.$Itemid.' )',false,4);
+			$this->_logMsg($txt.': ['.$this->articleCounter.'] '.$article['title'].' ( article id  = '.$article['id'].' ; Itemid = '.$Itemid .' ; alias: '.$array['alias'] .' )',false,4);
 			if ($this->isAjax ) {
 
 				$next_key = $this->_getNextKey($array = $this->articles_current , $current_key = $articleId);

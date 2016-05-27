@@ -8,6 +8,9 @@
 .blockquote ul {
 	clear:both;
 }
+.blockquote .title label  {
+	font-weight: bold;
+}
 .blockquote .title {
 	background: none repeat scroll 0 0 #EFEFEF;
 	color: black;

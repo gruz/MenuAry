@@ -94,6 +94,13 @@ $debug = false;
 		static $defaults = array();
 		//~ static $runNumber = 0;
 		//~ $runNumber++;
+		if (isset($this->element['label'])) {
+			$this->element['label'] = $this->_replaceNestedJtextConstants($this->element['label']);
+		}
+		if (isset($this->element['description'])) {
+			$this->element['description'] = $this->_replaceNestedJtextConstants($this->element['description']);
+		}
+
 		if (!$flag || !isset($this->origname)) {
 			$this->origname = (string)$this->fieldname;
 		}
@@ -265,6 +272,9 @@ if($debug) dumpMessage (' Setting <b>'.$target_parameters[$k] . '</b> to  <b>'. 
 						switch ((string)$field->element['basetype']) {
 							case 'blockquote':
 							case 'toggler':
+							case 'note':
+							case 'notefixed':
+							case 'spacer':
 
 								break;
 							default :
@@ -315,6 +325,12 @@ if($debug) dumpMessage (' Setting <b>'.$target_parameters[$k] . '</b> to  <b>'. 
 		$formfield = JFormHelper::loadFieldType($basetype);
 		$this->element['clean_name'] = (string)$this->element['name'];
 		$this->element['name'] = $this->name.'[]';
+		if(isset($this->element->option)) {
+			foreach ($this->element->option as $Item) {
+				$Item[0] = $this->_replaceNestedJtextConstants ($Item[0]);
+
+			}
+		}
 		$formfield->setup($this->element,'');
 
 		$output = '';
@@ -495,6 +511,20 @@ if($debug) dumpMessage (' Setting <b>'.$target_parameters[$k] . '</b> to  <b>'. 
 			$output .= PHP_EOL.'</div><!-- variablefield_div repeating_group -->'.PHP_EOL;
 		}
 		return $output;
+	}
+
+	protected function _replaceNestedJtextConstants($text) {
+		$text = JText::_($text);
+		if (empty($text)) return;
+		preg_match_all('/#~#([^#~#]*)#~#/i',$text,$matches);
+		if (!empty($matches[0])) {
+			foreach ($matches[1] as $k=>$string) {
+				if (JText::_($string) != $string) {
+					$text = str_replace($matches[0][$k],JText::_($string),$text);
+				}
+			}
+		}
+		return $text;
 	}
 
 }

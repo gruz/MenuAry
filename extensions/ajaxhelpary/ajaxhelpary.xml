@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.0" type="plugin" group="ajax" method="upgrade">
   <name>Ajax - HelpAry</name>
-  <version>1.0.6</version>
-  <creationDate>2016-04-14</creationDate>
+  <version>1.1.1</version>
+  <creationDate>2016-05-05</creationDate>
   <author>Gruz</author>
   <authorEmail>arygroup@gmail.com</authorEmail>
   <authorUrl>http://gruz.org.ua/en/extensions/ajaxhelpary.html</authorUrl>
@@ -68,8 +68,8 @@ class plgSystemMenuary extends JPluginGJFields  {
 You may get more ideas how it can work when examining the <a href="http://gruz.org.ua/en/extensions/menuary-automatic-menu.html">MenuAry</a> plugin code </p>
 	]]></description>
   <files>
-    
-    
+
+
   <filename>README.md</filename><filename plugin="ajaxhelpary">ajaxhelpary.php</filename></files>
   <config>
     <fields name="params">
@@ -78,7 +78,7 @@ You may get more ideas how it can work when examining the <a href="http://gruz.o
           <option value="0">JNO</option>
           <option value="1">JYES</option>
         </field>
-        <field name="list_templates" type="repeatable" icon="list" description="" label="Limit to plugins" default="{'scope':['admin','both'],'plg_type':['system','content'],'plg_name':['menuary','notifyarticlesubmit'],'function':['_ajaxRun','_ajaxRun']}">
+        <field name="list_templates" type="repeatable" icon="list" description="" label="Limit to plugins" default="{'scope':['admin','both'],'plg_type':['system','content'],'plg_name':['menuary','notificationary'],'function':['_ajaxRun','_ajaxRun']}">
           <fieldset hidden="true" name="list_templates_modal" repeat="true">
             <field name="scope" type="list" default="both" label="Scope" description="">
               <option value="both">Backend and frontend</option>
@@ -93,5 +93,5 @@ You may get more ideas how it can work when examining the <a href="http://gruz.o
       </fieldset>
     </fields>
   </config>
-  
+
 <updateservers><servers type="extension" priority="1" name="ajaxhelpary">http://gruz.org.ua/index.php?option=com_ars&amp;view=update&amp;task=stream&amp;format=xml&amp;id=18&amp;dummy=extension.xml</servers></updateservers></extension>

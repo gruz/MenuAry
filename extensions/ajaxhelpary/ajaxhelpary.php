@@ -79,11 +79,66 @@ class plgAjaxAjaxhelpary extends JPlugin
 			return $results[0];
 		}
 	}
+	/*
+	 * The function to be called from AJAX to build really working SEF links from backend.
+	 *
+	 * Creates a backend user session, gets JRoute::_() and delets the session.
+	 * It's a must to fake login-logout at FE, as JRoute::_() doesn't create correct links
+	 * for e.g. content items limited to Registred if you are not logged in at FE.
+	 * */
 	function getFEURl ($serialize) {
+		$app	= JFactory::getApplication();
+		if ($app->isAdmin()) { return; } // Has to work as a FE called function
+		$db		= JFactory::getDbo();
+		$user	= JFactory::getUser();
+		$jinput =  JFactory::getApplication()->input;
+		$userId = $jinput->get('userid',null);
+		if (empty($userId)) { return; }
 		$url = unserialize(base64_decode($serialize));
+
+		if ($user->id == $userId) {	echo JRoute::_($url);	return;	}
+
+		//~ if ($user->id) {
+			//~ JError::raiseWarning('SOME_ERROR_CODE', JText::_('SWITCHUSER_YOU_HAVE_LOGIN_LOGOUT_FIRST'));
+			//~ return $app->redirect('index.php');
+		//~ }
+
+		$cookie = md5(JApplication::getHash('site'));
+		//~ $cookie = md5(JApplication::getHash('administrator'));
+
+		$backendSessionId = $jinput->cookie->get($cookie,null);
+
+		$query = 'SELECT userid'
+			. ' FROM #__session'
+			. ' WHERE session_id = '.$db->Quote($backendSessionId)
+			//~ . ' AND client_id = 1'
+			//~ . ' AND guest = 0'
+		;
+		$db->setQuery($query);
+
+		$instance = JFactory::getUser($userId);
+
+		// If _getUser returned an error, then pass it back.
+		if (JError::isError($instance)) {		return; 		}
+
+		//Mark the user as logged in
+		$instance->set( 'guest', 0);
+		$instance->set('aid', 1);
+
+		// Register the needed session variables
+		$session = JFactory::getSession();
+		$session->set('user', $instance);
+
+		// Get the session object
+		$table =  JTable::getInstance('session');
+		$table->load( $session->getId() );
+		$table->guest 		= $instance->get('guest');
+		$table->username 	= $instance->get('username');
+		$table->userid 		= intval($instance->get('id'));
+
+
+		$table->update();
 		echo JRoute::_($url);
-		//~ $router1 = JRouter::getInstance('site');
-		//~ dump ($router1,'$router1');
-		//~ $url = $router1->build('index.php?option=com_k2&view=item&id=1&Itemid=510')->toString();
+		$table->delete();
 	}
 }

@@ -53,7 +53,7 @@ class JFormFieldNN_Version extends JFormField 	{
 			$return .=  '<input type="hidden" name="' . $this->name
 			//. '" id="' . $this->id
 			. '" value="'
-			. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' .  ' />';
+			. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' .  ' />'; // This input is used to store active tab position
 
 
 		}

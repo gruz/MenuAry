@@ -10,10 +10,12 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
+if (!class_exists('ScriptAry')) { include dirname(__FILE__).'/scriptary.php';}
+
 /**
  * Script file
  */
-class plgsystemMenuaryInstallerScript {
+class plgsystemMenuaryInstallerScript extends ScriptAry {
 	/**
 	 * method to install the component
 	 *
