@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.0" type="plugin" group="system" method="upgrade">
   <name>PLG_MENUARY</name>
-  <creationDate>2016-05-27</creationDate>
+  <creationDate>2016-07-03</creationDate>
   <author>Gruz</author>
   <authorEmail>arygroup@gmail.com</authorEmail>
   <authorUrl>http://gruz.org.ua/en/extensions/menuary-automatic-menu.html</authorUrl>
   <copyright>Copyright (C) 2004-2016 Gruz All rights reserved.</copyright>
-  <version>1.1.5</version>
+  <version>1.1.6</version>
   <license>GNU/GPL</license>
   <description>PLG_MENUARY_DESC</description>
   <files>
-    <folder>css</folder>
-    <folder>extensions</folder>
-    <folder>images</folder>
-    <folder>js</folder>
-    <folder>language</folder>
-    <folder>models</folder>
-    <filename>README.md</filename>
-    <filename>index.html</filename>
-    <filename>install.sql</filename>
-    <filename plugin="menuary">menuary.php</filename>
-    <filename>scriptary.php</filename>
-    <filename>scriptfile.php</filename>
-    <filename>uninstall.sql</filename>
-  </files>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  <folder>css</folder><folder>extensions</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>models</folder><filename>README.md</filename><filename>index.html</filename><filename>install.sql</filename><filename plugin="menuary">menuary.php</filename><filename>scriptary.php</filename><filename>scriptfile.php</filename><filename>uninstall.sql</filename></files>
   <config>
     <fields name="params" addfieldpath="/plugins/system/menuary/models/fields">
       <fieldset name="advanced" group="advanced">
@@ -117,8 +117,6 @@
       <file driver="mysql" charset="utf8">uninstall.sql</file>
     </sql>
   </uninstall>
-  <scriptfile>scriptfile.php</scriptfile>
-  <updateservers>
-    <servers type="extension" priority="1" name="menuary">http://gruz.org.ua/index.php?option=com_ars&amp;view=update&amp;task=stream&amp;format=xml&amp;id=12&amp;dummy=extension.xml</servers>
-  </updateservers>
-</extension>
+  
+  
+<scriptfile>scriptfile.php</scriptfile><updateservers><servers type="extension" priority="1" name="menuary">http://gruz.org.ua/index.php?option=com_ars&amp;view=update&amp;task=stream&amp;format=xml&amp;id=12&amp;dummy=extension.xml</servers></updateservers></extension>

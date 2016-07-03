@@ -1642,7 +1642,12 @@ ArticlesCycle:
 			if ($Itemid == 0) { $isNew = true; }
 			if ($isNew) { $this->rebuild = true; }
 			// find parent Itemid for the current $contentElement
-			$parent_Itemid = $params['target_menu_item'];
+			if ($params['target'] == 'menuitem') {
+				$parent_Itemid = $params['target_menu_item'];
+			}
+			else {
+				$parent_Itemid = 1;
+			}
 			$doNothing = false;
 			switch ($context) {
 				case 'com_content.article':
@@ -1679,9 +1684,10 @@ ArticlesCycle:
 			}
 
 			$path_to_be_created = array_reverse($path_to_be_created);
+
 			foreach ($path_to_be_created as $key=>$path_object) {
 
-				if ($params['articles_number'] > 0 && $path_object->context == 'com_content.article' ) {
+				if ($path_object->context == 'com_content.article' && $params['articles_number'] > 0 ) {
 					if ($isNew && $path_object->state != 1) { continue; } // If $params['articles_number'] > 0 and a non-published article is added, then don't care about the menu
 					if ($this->previous_state != $path_object->state && ($path_object->state == 1 | $this->previous_state == 1)) {
 						if ($params['show_articles'] == "1") {
@@ -1722,9 +1728,7 @@ ArticlesCycle:
 					'language' =>  $path_object->language,
 					'contentid' =>  $path_object->id,
 					'id'=>$path_object->Itemid
-
 				);
-
 				$parent_Itemid = $this->_saveMenuItem($path_object->context /*values:category|article*/, $array /*array of data to be stored*/, $params /*current rule params*/);
 				if ($isNew ) {
 					$this->_createMenuAryRecord($context = $context, $Itemid = $parent_Itemid, $content_id = $path_object->id,$params );

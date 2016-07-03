@@ -12,6 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 if (!class_exists('ScriptAry')) { include dirname(__FILE__).'/scriptary.php';}
 
+
+
 /**
  * Script file
  */
