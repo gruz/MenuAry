@@ -6,7 +6,9 @@ jQuery( document ).ready(function( $ ) {
 
 	var favicon = $('link[rel="shortcut icon"]');
 	var favicon_orig_attr = favicon.attr('href');
-	var url = menuary_ajax_url;
+	var url = Joomla.optionsStorage.menuary.ajax_url;
+	var message = Joomla.optionsStorage.menuary.ajax_message;
+
 	var i = 0;
 	var done_code = '##done##';
 	var error_code = '##error##';
@@ -15,7 +17,6 @@ jQuery( document ).ready(function( $ ) {
 
 var num = -1;
 var favicons = ['/plugins/system/menuary/images/favicon1.ico','/plugins/system/menuary/images/favicon2.ico','/plugins/system/menuary/images/favicon3.ico','/plugins/system/menuary/images/favicon4.ico'];
-
 
 
 $( "#continue" ).click(function() {
@@ -42,7 +43,7 @@ $( "#clear" ).click(function() {
 
 		$.get(url, function(response) {
 			if (response.indexOf(error_code) >= 0) { // if done
-				resultElement.append( ajax_helpary_message+response.replace(error_code, '')  );
+				resultElement.append( message+response.replace(error_code, '')  );
 			}
 			else if (response.indexOf(done_code) >= 0) { // if done
 				resultElement.append( response.replace(done_code, '')  );

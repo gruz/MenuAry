@@ -65,7 +65,7 @@ window.addEvent('domready', function() {
 
 			}
 		}
-		// Gruz: I don't understand what this part is for
+
 		if (task == 'plugin.cancel' || document.formvalidator.isValid(document.id('style-form'))) {
 			Joomla.submitform(task, document.getElementById('style-form'));
 		}
