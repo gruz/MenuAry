@@ -2717,8 +2717,15 @@ ArticlesCycle:
 			switch ($context)
 			{
 				case 'com_content.article':
-					$current_contentElement = $contentElement;
-					$parent_category_id = $current_contentElement->catid;
+					if ($params['show_articles'])
+					{
+						$current_contentElement = $contentElement;
+						$parent_category_id = $current_contentElement->catid;
+					}
+					else
+					{
+						$doNothing = true;
+					}
 					break;
 				case 'com_categories.category':
 
