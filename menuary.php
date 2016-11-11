@@ -3090,7 +3090,7 @@ ArticlesCycle:
 		// $applicationName = JFactory::getApplication()->getName();
 
 		// Template name
-		$template = JFactory::getApplication()->getTemplate();
+		// ~ $template = JFactory::getApplication()->getTemplate();
 
 		$includePath = array(JPATH_ROOT . '/plugins/' . $this->plg_type . '/' . $this->plg_name . '/code');
 
