@@ -1306,7 +1306,7 @@ ArticlesCycle:
 				'component_id' => 22,
 				'access' => $article['access'],
 				'language' => $article['language'],
-				'contentid' => $article['id']
+				'contentid' => $article['id'],
 			);
 
 			// $this->_setRebuildFlag($array,$Itemid);
@@ -1659,13 +1659,16 @@ ArticlesCycle:
 	 * @param   string  $context  Possible values: com_categories.category or com_content.article
 	 * @param   array   $array    Object to be stored to the JTableMenu #__menu
 	 * @param   array   &$params  Current group of rules
+	 * @param   bool    $isNew    Wether we update or create a new article/category
 	 *
 	 * @return	void
 	 */
 	private function _saveMenuItem(
 		$context /*values:com_categories.category|com_content.article*/,
 		$array /*array of data to be stored*/,
-		&$params /*current rule params*/)
+		&$params /*current rule params*/,
+		$isNew = true /* wether we update or create a new article/category */
+		)
 	{
 		if (empty($context))
 		{
@@ -1684,12 +1687,14 @@ ArticlesCycle:
 		It became:*/
 		/*##mygruz20160104043733 } */
 
+		$app = JFactory::getApplication();
+
 		// Here I must save it twice. I don't know why, but when saving once for a new item, it refuses to save at least parent_id.
 		if ($array['id'] == 0 || !isset($array['id']))
 		{
 			if (!$table->save($array))
 			{
-				JError::raiseError(500, 'MenuAry: ' . $table->getError());
+				$app->enqueueMessage('MenuAry: ' . $table->getError() . '<br/>', 'error');
 			}
 
 			$array['id'] = $table->id;
@@ -1844,25 +1849,31 @@ ArticlesCycle:
 			}
 			else
 			{
-				$order = 'last-child';
-
-				if ($order_param_exploded[1] == 'desc')
+				if ($isNew)
 				{
-					$order = 'first-child';
-				}
+					$order = 'last-child';
 
-				$table->setLocation($array['parent_id'], $order);
+					if ($order_param_exploded[1] == 'desc')
+					{
+						$order = 'first-child';
+					}
+
+					$table->setLocation($array['parent_id'], $order);
+				}
 			}
 		}
 		else
 		{
-			$order = 'last-child';
-			$table->setLocation($array['parent_id'], $order);
+			if ($isNew)
+			{
+				$order = 'last-child';
+				$table->setLocation($array['parent_id'], $order);
+			}
 		}
 
 		if (!$table->save($array))
 		{
-			JError::raiseError(500, 'MenuAry: ' . $table->getError());
+			$app->enqueueMessage('MenuAry: ' . $table->getError() . '<br/>', 'error');
 		}
 		else
 		{
@@ -2425,12 +2436,13 @@ ArticlesCycle:
 	 * This is a custom event not introduced by Joomla
 	 *
 	 * Is used in conjunction with overriding com_content and com_categories
+	 * Reflect menuary menu items order accoridin to the source (article/category) order
 	 *
 	 * @param   string  $context  Context
 	 * @param   array   $ids      Array of content ids
 	 * @param   array   $order    Array of orders of content ids
 	 *
-	 * @return   type  Description
+	 * @return  void
 	 */
 	public function onContentReorder($context, $ids, $order)
 	{
@@ -2644,9 +2656,22 @@ ArticlesCycle:
 	 */
 	public function onContentBeforeSave($context, $article, $isNew)
 	{
-		$this->previous_article = JTable::getInstance('content');
-		$this->previous_article->load($article->id);
-		$this->previous_state = $this->previous_article->state;
+		switch ($context)
+		{
+			case 'com_categories.category':
+				$this->previous_object = JTable::getInstance('category');
+				break;
+
+			case 'com_content.article':
+				$this->previous_object = JTable::getInstance('content');
+			break;
+		}
+
+		if (isset($this->previous_object))
+		{
+			$this->previous_object->load($article->id);
+			$this->previous_state = $this->previous_object->state;
+		}
 	}
 
 	/**
@@ -2851,7 +2876,8 @@ ArticlesCycle:
 				$parent_Itemid = $this->_saveMenuItem(
 					$path_object->context /*values:category|article*/,
 					$array /*array of data to be stored*/,
-					$params /*current rule params*/
+					$params /*current rule params*/,
+					$isNew
 				);
 
 				if ($isNew )
