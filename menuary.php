@@ -106,6 +106,20 @@ class PlgSystemMenuary extends JPluginGJFields
 				continue;
 			}
 
+			$scope = $group_of_rules['scope'];
+
+			if (JFactory::getApplication()->isAdmin() && $scope == 'site')
+			{
+				unset($this->pparams[$k]);
+				continue;
+			}
+
+			if (!JFactory::getApplication()->isAdmin() && $scope == 'admin')
+			{
+				unset($this->pparams[$k]);
+				continue;
+			}
+
 			$this->pparams[$k]['articles_number'] = (int) $this->pparams[$k]['articles_number'];
 
 			if ($group_of_rules['target'] == 'root')
@@ -352,10 +366,12 @@ class PlgSystemMenuary extends JPluginGJFields
 			return true;
 		}
 
+		/*
 		if (!JFactory::getApplication()->isAdmin())
 		{
 			return true;
 		}
+		*/
 
 		$jinput = JFactory::getApplication()->input;
 
@@ -369,9 +385,16 @@ class PlgSystemMenuary extends JPluginGJFields
 			return true;
 		}
 
-		if (!empty($context) && !in_array($context, array('com_content.article','com_categories.category')))
+		if (!empty($context))
 		{
-			return true;
+			if (JFactory::getApplication()->isAdmin() && !in_array($context, array('com_content.article','com_categories.category')))
+			{
+				return true;
+			}
+			elseif (!JFactory::getApplication()->isAdmin() && !in_array($context, array('com_content.form')))
+			{
+				return true;
+			}
 		}
 
 		return false;
@@ -1664,11 +1687,10 @@ ArticlesCycle:
 	 * @return	void
 	 */
 	private function _saveMenuItem(
-		$context /*values:com_categories.category|com_content.article*/,
-		$array /*array of data to be stored*/,
-		&$params /*current rule params*/,
-		$isNew = true /* wether we update or create a new article/category */
-		)
+		$context /* values:com_categories.category|com_content.article */,
+		$array /* array of data to be stored */,
+		&$params /* current rule params */,
+		$isNew = true /* wether we update or create a new article/category */	)
 	{
 		if (empty($context))
 		{
@@ -2057,6 +2079,11 @@ ArticlesCycle:
 		if (empty($context))
 		{
 			$context = 'com_categories.category';
+		}
+
+		if (!JFactory::getApplication()->isAdmin() && $context == 'com_content.form')
+		{
+			$context = 'com_content.article';
 		}
 
 		// Get a db connection.
@@ -2614,7 +2641,8 @@ ArticlesCycle:
 		$context = explode('.', $context);
 		$extension = $context[0];
 		$context = $extension . '.item';
-		$tablename = '#__' . end(explode('_', $extension));
+		$tmp = explode('_', $extension);
+		$tablename = '#__' . end($tmp);
 
 		// This would work, but gives an array with extra info
 		// $associations = JLanguageAssociations::getAssociations($extension, $tablename, $context, $id);
@@ -2688,6 +2716,11 @@ ArticlesCycle:
 		if ($this->_forceGoOut($context))
 		{
 			return;
+		}
+
+		if (!JFactory::getApplication()->isAdmin() && $context == 'com_content.form')
+		{
+			$context = 'com_content.article';
 		}
 
 		$this->rebuild = false;
@@ -2972,7 +3005,13 @@ ArticlesCycle:
 	 */
 	private function _msg($msg, $type = 'message')
 	{
-		JFactory::getApplication()->enqueueMessage('<small>' . JText::_('PLG_MENUARY') . ': ' . $msg . '</small>', $type);
+		$user = JFactory::getUser();
+		$hasBackendAccess = $user->authorise('core.login.admin');
+
+		if ($hasBackendAccess)
+		{
+			JFactory::getApplication()->enqueueMessage('<small>' . JText::_('PLG_MENUARY') . ': ' . $msg . '</small>', $type);
+		}
 	}
 
 	/**
@@ -3063,7 +3102,8 @@ ArticlesCycle:
 		$jinput = JFactory::getApplication()->input;
 		$var = $jinput->get($var, null);
 
-		if (empty($var) && JFactory::getApplication()->isAdmin())
+		// ~ if (empty($var) && JFactory::getApplication()->isAdmin())
+		if (empty($var))
 		{
 			$app = JFactory::getApplication();
 			$router = $app->getRouter();

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="2.5" type="file" method="upgrade">
   <name>uk_UA_menuary_language_pack</name>
-  <version>2016-11-14 07:09</version>
-  <creationDate>2016-11-14 07:09</creationDate>
+  <version>2017-03-11 09:17</version>
+  <creationDate>2017-03-11 09:17</creationDate>
   <author>AryGroup</author>
   <email>arygroup@gmail.com</email>
   <authorUrl>http://arygroup.ga</authorUrl>
-  <copyright>Copyright (C) 2004-2016 Gruz. All rights reserved.</copyright>
+  <copyright>Copyright (C) 2004-2017 Gruz. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <description>uk-UA MenuAry - automatic menu language pack</description>
   <scriptfile>scriptfile.php</scriptfile>

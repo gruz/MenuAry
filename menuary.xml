@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.6" type="plugin" group="system" method="upgrade">
   <name>PLG_MENUARY</name>
-  <creationDate>2016-11-14</creationDate>
+  <creationDate>2017-03-11</creationDate>
   <author>Gruz</author>
   <authorEmail>arygroup@gmail.com</authorEmail>
   <authorUrl>http://gruz.org.ua/en/extensions/menuary-automatic-menu.html</authorUrl>
-  <copyright>Copyright (C) 2004-2016 Gruz All rights reserved.</copyright>
-  <version>1.1.10</version>
+  <copyright>Copyright (C) 2004-2017 Gruz All rights reserved.</copyright>
+  <version>1.1.11</version>
   <license>GNU/GPL</license>
   <description>PLG_MENUARY_DESC</description>
   <files>
@@ -46,6 +46,11 @@
         <field name="ruleEnabled" type="variablefield" basetype="list" maxrepeatlength="1" default="1" label="JENABLED">
           <option value="1">JYES</option>
           <option value="0">JNO</option>
+        </field>
+        <field name="scope" type="variablefield" basetype="list" maxrepeatlength="1" default="admin" label="PLG_MENUARY_SCOPE">
+          <option value="site">JSITE</option>
+          <option value="admin">JADMINISTRATOR</option>
+          <option value="both">JALL</option>
         </field>
         <field name="target" type="variablefield" basetype="list" maxrepeatlength="1" default="root" label="PLG_MENUARY_MENU_PARENT">
           <option value="root">PLG_MENUARY_MENU_PARENT_ROOT</option>
