@@ -4,6 +4,13 @@ jQuery( document ).ready(function( $ ) {
 		return;
 	}
 
+	if (Joomla.optionsStorage === null)
+	{
+		var Options = Joomla.getOptions('menuary');
+
+		Joomla.optionsStorage = {'menuary':Options};
+	}
+
 	var favicon = $('link[rel="shortcut icon"]');
 	var favicon_orig_attr = favicon.attr('href');
 	var url = Joomla.optionsStorage.menuary.ajax_url;
